@@ -1,204 +1,270 @@
-# FieldLog
+# Metatrata
 
-**A local-first personal data collection manager for independent researchers, citizen scientists, and field enthusiasts.**
+**A local-first metadata normalizer and personal collection manager for biological and scientific files.**
 
-FieldLog is a free, open-source desktop application that helps you organize, tag, filter, and visualize your personal data collections — entirely on your own device. No accounts. No cloud. No data leaves your machine.
+MetaStrata wraps any scientific file — FASTQ, FASTA, Darwin Core, FHIR, ISA-Tab, BAM, VCF, and more — in a standardized envelope that adds, normalizes, and preserves metadata. The enriched file is your personal record. Nothing ever leaves your machine.
 
 ---
 
-## What FieldLog Is
+## What MetaStrata Does
 
-FieldLog is a personal database manager optimized for field observations, biological notes, scientific measurements, collected files, and any other structured data you want to keep organized locally.
+Most biological file formats were designed for *exchange* — not for *personal collection management*. They carry minimal metadata, don't link context to the file itself, and were never built for a citizen scientist organizing 200 samples across 3 fieldwork trips.
 
-Think of it as a personal lab notebook that understands structure — one that lets you filter and cross-reference everything you've ever collected, generate stats and charts, and export in standard formats.
+MetaStrata solves this with a simple model:
 
-**FieldLog is not a platform, not a cloud service, and not a data bank.** It's a desktop application, like Excel or Obsidian, but purpose-built for structured collection data.
+```
+original file  +  your metadata  =  .stratum file  (1:1)
+
+many .stratum files  =  .strata collection archive
+```
+
+**One `.stratum` file = one original file + all the metadata you add to it.** It's not a database dump. It's your original file, enriched and self-contained.
 
 ---
 
 ## Who It's For
 
-- 🧫 **Biohackers** organizing their self-collected samples, sequences, and observations
-- 🌱 **Citizen scientists** logging species sightings, environmental measurements, and field data
-- 🔬 **Independent researchers** maintaining a personal record of experiments and findings
-- 🌍 **Nature enthusiasts** tracking phenological observations, biodiversity records, and ecological data
-- 🌾 **Farmers and agronomists** logging crop performance, soil data, and farm observations
-- Anyone who collects data and wants it organized, searchable, and visualized
+- 🧫 **Biohackers** who want to organize self-collected samples, sequences, and observations with proper provenance before deciding what (if anything) to share publicly
+- 🔬 **Independent researchers** maintaining a personal fieldwork record alongside their sequencing output
+- 🌱 **Citizen scientists** building structured local records from iNaturalist exports, GBIF downloads, eDNA fieldwork
+- 🌾 **Agronomists** correlating crop observation data with environmental conditions
+- 🧬 **Anyone** who generates biological data files and wants them properly tagged, filterable, and portable
 
 ---
 
-## Key Features
+## Core Concepts
 
-- **Local-first** — all data stored in a SQLite database (`.flog` file) on your device. Nothing ever sent anywhere.
-- **Flexible entry schema** — define custom fields for any type of collection entry.
-- **Tagging system** — tag entries with multiple tags, build a personal taxonomy.
-- **Full-text search** — instantly search across all your entries, notes, and tags.
-- **File attachments** — attach files of any type to entries (photos, sequences, audio, documents). Files stored in your `.flog` archive.
-- **Statistics dashboard** — visualize your collection: entries over time, distribution by tag, domain coverage charts, streak tracking.
-- **Shareable stats cards** — generate a shareable image (PNG) of your collection stats — without sharing any of your actual data. Brag about your progress, not your contents.
-- **Export** — export filtered subsets to CSV, JSON, or Darwin Core format. Full backup export of your entire `.flog` database.
-- **Import** — import from CSV, iNaturalist export, GBIF download, custom CSV with field mapping.
-- **Offline-first** — works with no internet connection.
+### The `.stratum` File (1:1 conversion)
 
----
+A `.stratum` file is a ZIP archive that wraps **a single source file** with a metadata sidecar:
 
-## The `.flog` File Format
-
-FieldLog uses the `.flog` format — a SQLite database with a standardized schema. You can open `.flog` files with any SQLite browser (DB Browser for SQLite, DBeaver, etc.) in addition to FieldLog.
-
-### Schema Overview
-
-```sql
--- Core tables
-CREATE TABLE entries (
-    id          TEXT PRIMARY KEY,    -- UUID
-    title       TEXT NOT NULL,
-    notes       TEXT,
-    entry_type  TEXT,                -- user-defined category
-    created_at  TEXT NOT NULL,       -- ISO 8601
-    updated_at  TEXT NOT NULL,
-    latitude    REAL,                -- optional GPS
-    longitude   REAL,
-    altitude_m  REAL,
-    custom_data TEXT                 -- JSON blob for custom fields
-);
-
-CREATE TABLE tags (
-    id          TEXT PRIMARY KEY,
-    name        TEXT UNIQUE NOT NULL,
-    color       TEXT,
-    parent_id   TEXT REFERENCES tags(id)  -- hierarchical tags
-);
-
-CREATE TABLE entry_tags (
-    entry_id    TEXT REFERENCES entries(id),
-    tag_id      TEXT REFERENCES tags(id),
-    PRIMARY KEY (entry_id, tag_id)
-);
-
-CREATE TABLE attachments (
-    id          TEXT PRIMARY KEY,
-    entry_id    TEXT REFERENCES entries(id),
-    filename    TEXT NOT NULL,
-    mime_type   TEXT,
-    size_bytes  INTEGER,
-    stored_path TEXT NOT NULL,       -- relative path within .flog archive
-    sha256      TEXT NOT NULL,       -- integrity hash
-    created_at  TEXT NOT NULL
-);
-
-CREATE TABLE fields (
-    id          TEXT PRIMARY KEY,
-    name        TEXT NOT NULL,
-    field_type  TEXT NOT NULL,       -- text, number, date, choice, boolean, url
-    options     TEXT,                -- JSON array for choice fields
-    applies_to  TEXT                 -- entry_type filter, null = all
-);
-
-CREATE TABLE meta (
-    key         TEXT PRIMARY KEY,
-    value       TEXT
-    -- Stores: schema_version, created_at, fieldlog_version, collection_name
-);
+```
+sample_001.stratum (ZIP)
+├── source/
+│   └── SRR12345.fastq          # Your original file — untouched
+├── metadata.json               # All metadata you added/normalized
+├── provenance.json             # Collection context: GPS, date, method, equipment
+├── tags.json                   # Your personal tag set
+└── manifest.json               # Schema version, Metastrata version, file hashes
 ```
 
-### File Structure
+**The original file is always preserved inside the `.stratum` archive.** MetaStrata never modifies, re-encodes, or transforms your source data. It adds a layer; it doesn't touch the content.
 
-A `.flog` file is a ZIP archive containing:
+### The `.strata` Collection Archive
+
+A `.strata` file is an aggregated archive of multiple `.stratum` files:
+
 ```
-my_collection.flog (ZIP)
-├── fieldlog.db          # SQLite database (all entries, tags, fields, metadata)
-├── attachments/         # All attached files, named by SHA-256 hash
-│   ├── a3f2...c8.fastq
-│   ├── b7d1...44.jpg
-│   └── ...
-└── export_manifest.json # Summary: entry count, tag list, date range
+my_fieldwork_2025.strata (ZIP)
+├── sample_001.stratum
+├── sample_002.stratum
+├── sample_003.stratum
+└── collection_index.json       # Searchable index of all entries, tags, provenance
+```
+
+You build a collection by adding `.stratum` files to it from within the app. The collection index enables filtering, search, and aggregate stats across all your entries.
+
+---
+
+## Supported Source Formats
+
+MetaStrata accepts any file as a source. The following formats receive format-aware metadata validation and template suggestions:
+
+| Category | Formats |
+|----------|---------|
+| DNA Sequences | FASTQ, FASTA, BAM, SAM, CRAM, VCF, BCF |
+| Genomic Annotation | GFF, GTF, BED, GenBank flat file (.gb/.gbk) |
+| Biodiversity / Occurrence | Darwin Core CSV, Darwin Core Archive (.zip), GBIF download, iNaturalist export CSV |
+| Clinical / Health | FHIR JSON/XML, HL7 |
+| Study Metadata | ISA-Tab (.txt investigation/study/assay), MAGE-TAB |
+| Metagenomics | BIOM format (.biom), QIIME2 artifact (.qza) |
+| Molecular Structure | PDB, SDF/MOL, SMILES CSV, CIF |
+| Spectroscopy | JCAMP-DX, mzML, mzXML |
+| Generic | Any file — metadata schema is user-defined |
+
+---
+
+## Metadata Schema
+
+When you open a source file in MetaStrata, the app detects the format and pre-populates a metadata template appropriate for that type. You fill in what you know and leave the rest blank.
+
+### Universal Provenance Fields (all formats)
+
+```json
+{
+  "collection_date": "2025-03-15",
+  "collector_id": "your-name-or-identifier",
+  "location": {
+    "region": "Cordillera Central, Dominican Republic",
+    "gps_lat": 19.1234,
+    "gps_lon": -70.5678,
+    "altitude_m": 1200,
+    "location_notes": "Volcanic soil, cloud forest edge"
+  },
+  "collection_method": "Soil core extraction, 10cm depth",
+  "equipment": "Qiagen PowerSoil Pro kit",
+  "storage_conditions": "Frozen at -20C",
+  "legal_notes": "Collected from own land",
+  "compliance_self_attestation": "user_confirms_applicable_law_compliance"
+}
+```
+
+### Format-Specific Fields (example: FASTQ)
+
+```json
+{
+  "sequencer_model": "Oxford Nanopore MinION Mk1C",
+  "flowcell_id": "FAO12345",
+  "run_id": "run_20250315_001",
+  "basecalling_software": "Guppy 6.5.7",
+  "basecalling_model": "dna_r9.4.1_450bps_sup",
+  "phred_q30_percent": 78.4,
+  "total_reads": 45230,
+  "mean_read_length_bp": 1240,
+  "target_organism_hypothesis": "soil microbiome — bacterial 16S",
+  "organism_taxonomy_hypothesis": "Unknown — to be identified"
+}
+```
+
+### Darwin Core Fields (example: occurrence record)
+
+```json
+{
+  "basisOfRecord": "HumanObservation",
+  "scientificName": "Ganoderma sp.",
+  "kingdom": "Fungi",
+  "taxonRank": "genus",
+  "identificationConfidence": "tentative",
+  "identificationMethod": "morphology",
+  "habitat": "Decaying hardwood, subtropical moist forest",
+  "occurrenceRemarks": "Large fruiting body, approx 25cm diameter"
+}
 ```
 
 ---
 
-## Why `.flog` Over Existing Formats?
+## Feature Tagging
 
-Existing biological data formats (Darwin Core, FHIR, ISA-Tab, FASTQ, FASTA, etc.) are designed for sharing and exchange. FieldLog's `.flog` format is designed for **personal local collection management** — a different use case that no existing format covers well:
+Feature tags are your personal annotations about what a record *means* biologically or functionally. They are separate from provenance and separate from the source file's format-specific metadata.
 
-| Need | Darwin Core | SQLite (.db) | `.flog` |
-|------|-------------|--------------|---------|
-| Personal multi-type collection | ❌ Species only | ✅ | ✅ |
-| File attachments | ❌ | ❌ | ✅ |
-| Custom fields per entry type | ❌ | Manually | ✅ |
-| Built-in export to standard formats | ❌ | ❌ | ✅ (CSV, Darwin Core, JSON) |
-| Portable single-file archive | ❌ | ✅ | ✅ |
-| Human-readable without FieldLog | ❌ | With tools | ✅ (any SQLite browser) |
+```json
+{
+  "feature_tags": [
+    {"category": "morphological",    "value": "large fruiting body"},
+    {"category": "habitat",          "value": "decaying wood"},
+    {"category": "ecological_role",  "value": "wood decomposer"},
+    {"category": "personal_interest","value": "pharmaceutical candidate"},
+    {"category": "custom",           "value": "site: DR-forest-2025-A"}
+  ]
+}
+```
+
+Feature tags are fully user-defined. Build your own taxonomy. Tag anything you observe or hypothesize. This is your personal annotation layer — it stays local.
 
 ---
 
-## Shareable Stats — Not Data
+## Export Options
 
-FieldLog includes a **Stats Card Generator** that produces a shareable PNG image showing:
+From any `.stratum` file or `.strata` collection, you can export:
 
-- Total entries in your collection
-- Entry count by category/domain
-- Tags used (count, not values)
-- Entries added over time (chart)
+| Export Type | What You Get |
+|-------------|-------------|
+| **Original file extraction** | Your untouched source file, separated from the MetaStrata envelope |
+| **Metadata sidecar only** | The `metadata.json` + `provenance.json` as standalone files |
+| **Darwin Core CSV** | Occurrence/collection records exported in standard Darwin Core format for submission to iNaturalist, GBIF, or BOLD |
+| **Collection CSV** | All entries in your collection as a flat CSV with all metadata fields |
+| **Collection JSON** | Full JSON export of all entries with complete metadata |
+| **Filtered subset** | Any of the above, filtered by tag, date range, format type, or collection status |
+
+---
+
+## Import Options
+
+| Import Source | Notes |
+|--------------|-------|
+| Any supported file format | Drop a file; MetaStrata detects format and pre-fills metadata template |
+| iNaturalist CSV export | Imports observation records with automatic Darwin Core field mapping |
+| GBIF download | Imports occurrence data |
+| Existing `.stratum` file | Open and edit a previously created stratum |
+| Existing `.strata` archive | Open and add to an existing collection |
+
+---
+
+## Statistics Dashboard
+
+The Stats tab shows aggregate information about your collection:
+
+- Total entries by format type and category
+- Tag frequency distribution (what you tag most, not what the tags say)
+- Entries added over time (activity chart)
 - Collection streaks
-- Your custom collection name
+- Coverage by custom domain (your own organization system)
 
-**The stats card contains no entry content, no file data, no GPS coordinates, no identifiers.** Just aggregate numbers and charts — the same thing you'd see on any gaming achievement card or fitness app summary. Share it on [your knowledge platform], show your friends, flex your dedication.
+### Shareable Stats Cards
+
+Generate a PNG stats card showing your aggregate collection stats — **no entry content, no file data, no GPS coordinates, no identifiers.** Just counts and charts. Share it on UngatedMinds discussions, GitHub, or anywhere else to show your collection progress without exposing any actual data.
 
 ---
 
 ## Installation
 
 ```bash
-# Electron desktop app (Windows, macOS, Linux)
-# Download from Releases page — .exe / .dmg / .AppImage
+# Electron desktop app — Windows, macOS, Linux
+# Download from Releases: .exe / .dmg / .AppImage
 
-# Or build from source:
-git clone https://github.com/[username]/fieldlog
-cd fieldlog
+# Build from source
+git clone https://github.com/RebornBeat/Metastrata
+cd metastrata
 npm install
 npm run build
 ```
 
+**Mobile (planned):** iOS and Android versions planned. Will read/write `.stratum` files and sync locally via USB/local network to desktop collection.
+
 ---
 
-## Usage
+## Usage Quick Reference
 
-```bash
-# Create a new collection
-File > New Collection > name your .flog file, choose save location
-
-# Add an entry
-+ New Entry > fill title, notes, tags, custom fields, attach files
-
-# Filter entries
-Filter Bar > by tag, by entry type, by date range, by text search
-
-# View stats
-Stats tab > collection overview, charts, generate shareable stats card
-
-# Export
-File > Export > choose format (CSV / Darwin Core / JSON) and filter
-
-# Backup
-File > Export > Full Backup (.flog copy)
 ```
+File > New Stratum      — wrap a single file with metadata
+File > Open Stratum     — edit an existing .stratum file
+File > New Collection   — create a .strata collection archive
+Collection > Add        — add a .stratum file to open collection
+Collection > Filter     — filter entries by tag/date/format/status
+Stats > View            — collection overview and charts
+Stats > Export Card     — generate shareable stats PNG
+File > Export           — export to CSV/JSON/Darwin Core/original file
+```
+
+---
+
+## The `.stratum` and `.strata` Format Specification
+
+Both formats are ZIP archives. The internal structure is documented at [spec/FORMAT.md] in the repository.
+
+- `manifest.json` contains: `metastrata_version`, `schema_version`, `source_filename`, `source_format`, `source_sha256`, `source_size_bytes`, `created_at`, `updated_at`
+- All JSON files use UTF-8 encoding
+- All files within the archive are referenced by relative path
+- Source files are stored in `source/` without modification
+- SHA-256 checksums in `manifest.json` verify source file integrity
 
 ---
 
 ## Legal Notice
 
-FieldLog is general-purpose data organization software. **The developer of FieldLog has no knowledge of, access to, or responsibility for data that users store in their local `.flog` databases.**
+MetaStrata is general-purpose data organization software. **The developer of MetaStrata has no knowledge of, access to, or responsibility for data that users store in their local `.stratum` and `.strata` files.**
 
-Users who collect biological samples, genetic sequences, or other materials regulated under the Nagoya Protocol, the Convention on Biological Diversity, or applicable national Access and Benefit-Sharing legislation are solely responsible for ensuring their collection activities comply with applicable law. FieldLog is not a platform for trading, sharing, or commercializing any data. It is a local database application.
+Users who collect biological samples, genetic sequences, eDNA, or other materials potentially regulated under the Nagoya Protocol on Access and Benefit Sharing, the Convention on Biological Diversity, or applicable national ABS legislation are **solely responsible** for ensuring their collection activities comply with applicable law. MetaStrata does not facilitate, enable, or participate in the commercialization, transfer, or licensing of genetic resources. It is a local metadata organization application.
+
+MetaStrata is not part of, affiliated with, or integrated into the UngatedMinds platform. It is an independent open-source project.
 
 ---
 
 ## Contributing
 
-Pull requests welcome. See [CONTRIBUTING.md] for guidelines.
+Pull requests welcome. See [CONTRIBUTING.md].
 
-Issues: [GitHub Issues](https://github.com/[username]/fieldlog/issues)
+Issues: [GitHub Issues](https://github.com/RebornBeat/metastrata/issues)
 
 ---
 
@@ -208,10 +274,4 @@ MIT License — free for personal and commercial use.
 
 ---
 
-## Related
-
-Users of this tool often also participate in the [Platform Name] knowledge community — an open learning network for intellectually curious people. If you want to discuss your findings, ask for help interpreting data, or learn from others in your field, that's the place to do it. FieldLog is a separate, standalone tool — not part of the platform.
-
----
-
-*FieldLog is built for the person who collects because they love it — not because an institution told them to.*
+*Strata is built for the person who collects carefully — and wants their collection to reflect that.*
