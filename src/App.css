@@ -1,0 +1,4 @@
+.app-root { display:flex; flex-direction:column; height:100vh; overflow:hidden; background:var(--bg-base); }
+.app-body  { display:flex; flex:1; overflow:hidden; min-height:0; }
+.app-content { display:flex; flex-direction:column; flex:1; overflow:hidden; min-width:0; }
+.app-main  { display:flex; flex:1; overflow:hidden; min-height:0; background:var(--bg-raised); position:relative; }

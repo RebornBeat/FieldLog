@@ -1,0 +1,20 @@
+.sidebar { display:flex; flex-direction:column; width:var(--sidebar-w); background:var(--bg-base); border-right:1px solid var(--border-dim); flex-shrink:0; overflow:hidden; z-index:10; }
+.sidebar__nav { display:flex; flex-direction:column; padding:8px 6px 0; gap:1px; }
+.sidebar__bottom { display:flex; flex-direction:column; padding:0 6px 12px; gap:1px; border-top:1px solid var(--border-dim); padding-top:8px; margin-top:auto; }
+.sidebar__recent { padding:8px 6px; flex:1; overflow-y:auto; }
+.sidebar__section-label { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-faint); padding:0 8px 5px; }
+
+.nav-item { display:flex; align-items:center; gap:10px; width:100%; height:34px; padding:0 10px; background:transparent; border:none; border-radius:var(--r-md); color:var(--text-secondary); cursor:pointer; transition:background var(--t-fast),color var(--t-fast); text-align:left; }
+.nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+.nav-item--active { background:var(--bg-selected); color:var(--text-bright); }
+.nav-item--active .nav-item__icon { color:var(--accent); }
+.nav-item__icon { flex-shrink:0; }
+.nav-item__label { font-size:13px; font-weight:500; flex:1; }
+.nav-item__badge { font-family:var(--font-mono); font-size:10px; background:var(--accent-faint); border:1px solid var(--accent-border); color:var(--accent); padding:1px 5px; border-radius:100px; flex-shrink:0; }
+
+.recent-item { display:flex; align-items:center; gap:7px; width:100%; height:28px; padding:0 8px; background:transparent; border:none; border-radius:var(--r-sm); cursor:pointer; text-align:left; transition:background var(--t-fast); }
+.recent-item:hover { background:var(--bg-hover); }
+.recent-item--active { background:var(--bg-selected); }
+.recent-item__fmt { font-family:var(--font-mono); font-size:8.5px; font-weight:600; color:var(--accent); background:var(--accent-faint); border:1px solid var(--accent-border); padding:1px 4px; border-radius:2px; flex-shrink:0; letter-spacing:0.03em; }
+.recent-item__name { font-size:11.5px; color:var(--text-muted); min-width:0; }
+.recent-item--active .recent-item__name { color:var(--text-primary); }

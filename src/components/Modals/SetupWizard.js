@@ -1,0 +1,70 @@
+import React from 'react';
+import { FolderOpen, Shield, Archive } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
+import './Modals.css';
+
+export default function SetupWizard() {
+  const { state, dispatch, chooseProjectRoot } = useApp();
+  const open = state.modals.setupWizard;
+  if (!open) return null;
+
+  return (
+    <div className="setup-overlay">
+      <div className="setup-wizard">
+        <div className="setup-wizard__logo">
+          <StratumMark />
+        </div>
+        <h1 className="setup-wizard__title">Welcome to MetaStrata</h1>
+        <p className="setup-wizard__sub">
+          Local-first scientific file metadata organizer. Before you begin,
+          choose a project folder where all your <code>.stratum</code> archives will be stored automatically.
+        </p>
+
+        <div className="setup-points">
+          <div className="setup-point">
+            <Archive size={16} className="setup-point__icon" />
+            <div>
+              <strong>All archives auto-save here</strong>
+              <p>No "Save As" dialogs. Every .stratum you create goes straight into this folder.</p>
+            </div>
+          </div>
+          <div className="setup-point">
+            <FolderOpen size={16} className="setup-point__icon" />
+            <div>
+              <strong>Self-aware collection</strong>
+              <p>MetaStrata scans this folder on launch and stays aware of every archive you have.</p>
+            </div>
+          </div>
+          <div className="setup-point">
+            <Shield size={16} className="setup-point__icon" />
+            <div>
+              <strong>Your data, your device</strong>
+              <p>Nothing is transmitted. Files never leave your machine. Ever.</p>
+            </div>
+          </div>
+        </div>
+
+        <button className="setup-wizard__cta" onClick={chooseProjectRoot}>
+          <FolderOpen size={16} />
+          Choose Project Folder
+        </button>
+
+        <button className="setup-wizard__skip" onClick={() => dispatch({ type:'CLOSE_MODAL', payload:'setupWizard' })}>
+          Skip for now
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StratumMark() {
+  return (
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+      <rect x="4" y="6"  width="48" height="12" rx="4" fill="var(--accent)"     opacity="1"   />
+      <rect x="4" y="22" width="48" height="9"  rx="3" fill="var(--accent-dim)" opacity="0.75"/>
+      <rect x="4" y="35" width="48" height="7"  rx="3" fill="var(--accent-dim)" opacity="0.50"/>
+      <rect x="4" y="45" width="48" height="5"  rx="2" fill="var(--accent-dim)" opacity="0.30"/>
+      <rect x="4" y="53" width="48" height="2"  rx="1" fill="var(--accent-dim)" opacity="0.15"/>
+    </svg>
+  );
+}

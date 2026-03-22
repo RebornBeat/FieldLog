@@ -1,0 +1,237 @@
+/* ─── Field Wrapper ──────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field__label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  user-select: none;
+}
+
+.field__required {
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+.field__error {
+  font-size: 11.5px;
+  color: var(--danger-bright);
+}
+
+.field__hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* ─── Input Wrapper ──────────────────────────────────────────────────────── */
+.field__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field__input-wrap--error .field__input {
+  border-color: rgba(146, 64, 64, 0.5) !important;
+}
+
+.field__input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ─── Base Input ─────────────────────────────────────────────────────────── */
+.field__input {
+  width: 100%;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.4;
+  transition: border-color var(--t-fast), background var(--t-fast);
+  outline: none;
+  appearance: none;
+}
+
+.field__input::placeholder {
+  color: var(--text-faint);
+}
+
+.field__input:focus {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+}
+
+.field__input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Text Input ─────────────────────────────────────────────────────────── */
+input.field__input {
+  height: 34px;
+  padding: 0 10px;
+}
+
+.field__input-wrap--icon input.field__input {
+  padding-left: 32px;
+}
+
+/* ─── Textarea ───────────────────────────────────────────────────────────── */
+.field__textarea {
+  padding: 8px 10px;
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.55;
+}
+
+/* ─── Select ─────────────────────────────────────────────────────────────── */
+.field__select-wrap {
+  position: relative;
+}
+
+select.field__input {
+  height: 34px;
+  padding: 0 32px 0 10px;
+  cursor: pointer;
+}
+
+.field__select-arrow {
+  position: absolute;
+  right: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+select.field__input option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ─── Toggle ─────────────────────────────────────────────────────────────── */
+.field--toggle {
+  gap: 4px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+  flex-shrink: 0;
+}
+
+.toggle:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.toggle--on {
+  background: var(--accent-faint);
+  border-color: var(--accent-border);
+}
+
+.toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: transform var(--t-fast), background var(--t-fast);
+}
+
+.toggle--on .toggle__thumb {
+  transform: translateX(16px);
+  background: var(--accent);
+}
+
+.toggle__label {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* ─── Tags Input ─────────────────────────────────────────────────────────── */
+.tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  min-height: 34px;
+  padding: 4px 8px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-fast);
+  cursor: text;
+}
+
+.tags-input:focus-within {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+}
+
+.tags-input__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  background: var(--bg-active);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  font-size: 11.5px;
+  color: var(--text-primary);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tags-input__remove {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+
+.tags-input__remove:hover {
+  color: var(--danger-bright);
+}
+
+.tags-input__input {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+}
+
+.tags-input__input::placeholder {
+  color: var(--text-faint);
+}

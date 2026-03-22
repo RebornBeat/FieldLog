@@ -1,0 +1,85 @@
+/* ── File Drop Zone ─────────────────────────────────────────────────────────── */
+.file-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 24px;
+  background: var(--bg-overlay);
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color var(--t-fast), background var(--t-fast);
+  text-align: center;
+  position: relative;
+}
+.file-drop-zone:hover { border-color: var(--accent-border); background: var(--accent-faint); }
+.file-drop-zone--filled { border-style: solid; border-color: var(--border-subtle); flex-direction: row; justify-content: flex-start; padding: 12px 14px; min-height: unset; cursor: default; gap: 10px; }
+.fdz__icon { color: var(--text-faint); }
+.fdz__icon--ok { color: var(--success-bright); flex-shrink: 0; }
+.fdz__label { font-size: 13.5px; color: var(--text-secondary); }
+.fdz__link { color: var(--accent); text-decoration: underline; cursor: pointer; }
+.fdz__hint { font-size: 11.5px; color: var(--text-faint); }
+.fdz__file-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; text-align: left; }
+.fdz__filename { font-size: 13px; font-weight: 600; color: var(--text-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fdz__format { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent); }
+.fdz__clear { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--bg-hover); border: none; border-radius: 50%; color: var(--text-muted); cursor: pointer; flex-shrink: 0; transition: background var(--t-fast), color var(--t-fast); }
+.fdz__clear:hover { background: var(--danger-faint); color: var(--danger-bright); }
+
+/* ── Scheme Suggestions ─────────────────────────────────────────────────────── */
+.scheme-suggestions { margin-bottom: 8px; }
+.scheme-suggestions__label { font-size: 10.5px; color: var(--text-faint); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.scheme-suggestion-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 7px 10px; background: var(--bg-overlay); border: 1px solid var(--border-subtle); border-radius: var(--r-sm); color: var(--text-secondary); font-size: 12.5px; cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast); margin-bottom: 4px; }
+.scheme-suggestion-btn:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-muted); }
+.scheme-suggestion-btn--selected { background: var(--accent-faint); border-color: var(--accent); color: var(--accent-bright); }
+.scheme-suggestion-btn__used { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); }
+.scheme-suggestion-btn--selected .scheme-suggestion-btn__used { color: var(--accent-dim); }
+
+/* ── Collection Stratum List ─────────────────────────────────────────────────── */
+.collection-stratum-list { display: flex; flex-direction: column; gap: 5px; max-height: 240px; overflow-y: auto; border: 1px solid var(--border-dim); border-radius: var(--r-md); padding: 6px; background: var(--bg-overlay); }
+.csl-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-sm); cursor: pointer; transition: background var(--t-fast); }
+.csl-item:hover { background: var(--bg-hover); }
+.csl-item--checked { background: var(--accent-faint); }
+.csl-checkbox { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+.csl-item__info { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.csl-item__fmt { font-family: var(--font-mono); font-size: 9px; font-weight: 700; padding: 1px 5px; background: var(--accent-faint); border: 1px solid var(--accent-border); border-radius: 2px; color: var(--accent); flex-shrink: 0; }
+.csl-item__name { font-size: 13px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.csl-item__file { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Modal Notice ───────────────────────────────────────────────────────────── */
+.modal-notice { background: var(--bg-overlay); border: 1px solid var(--border-faint); border-left: 2px solid var(--accent-dim); border-radius: var(--r-sm); padding: 10px 12px; }
+.modal-notice p { font-size: 12px; color: var(--text-muted); line-height: 1.65; }
+.modal-notice code { font-family: var(--font-mono); font-size: 11px; color: var(--accent); background: var(--accent-faint); padding: 1px 4px; border-radius: 2px; }
+
+/* ── Nagoya ─────────────────────────────────────────────────────────────────── */
+.nagoya-body { max-height: 360px; overflow-y: auto; }
+.nagoya-text { font-family: var(--font-body); font-size: 12.5px; color: var(--text-secondary); line-height: 1.75; white-space: pre-wrap; background: var(--bg-overlay); border: 1px solid var(--border-faint); border-radius: var(--r-md); padding: 16px; }
+
+/* ── About Modal ───────────────────────────────────────────────────────────── */
+.about-modal { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 8px 0; }
+.about-modal__logo { margin-bottom: 4px; }
+.about-modal__name { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text-bright); font-style: italic; }
+.about-modal__version { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+.about-modal__tagline { font-size: 13px; color: var(--text-secondary); }
+.about-modal__facts { display: flex; flex-direction: column; gap: 6px; margin: 4px 0; }
+.about-fact { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--text-muted); }
+.about-modal__legal { font-size: 11.5px; color: var(--text-faint); line-height: 1.7; max-width: 320px; padding-top: 8px; border-top: 1px solid var(--border-dim); }
+
+/* ── Setup Wizard ──────────────────────────────────────────────────────────── */
+.setup-overlay { position: fixed; inset: 0; background: var(--bg-base); display: flex; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.2s ease; }
+.setup-wizard { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; max-width: 480px; padding: 48px 32px; animation: fadeInUp 0.35s var(--t-slow); }
+.setup-wizard__logo { margin-bottom: 8px; }
+.setup-wizard__title { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--text-bright); font-style: italic; line-height: 1.1; }
+.setup-wizard__sub { font-size: 14px; color: var(--text-muted); line-height: 1.7; max-width: 400px; }
+.setup-wizard__sub code { font-family: var(--font-mono); font-size: 12px; color: var(--accent); background: var(--accent-faint); padding: 1px 5px; border-radius: 3px; }
+.setup-points { display: flex; flex-direction: column; gap: 12px; text-align: left; width: 100%; }
+.setup-point { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: var(--r-md); padding: 12px 14px; }
+.setup-point__icon { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.setup-point strong { display: block; font-size: 13.5px; color: var(--text-bright); margin-bottom: 2px; }
+.setup-point p { font-size: 12px; color: var(--text-muted); line-height: 1.55; margin: 0; }
+.setup-wizard__cta { display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 28px; background: var(--accent); border: none; border-radius: var(--r-md); color: #0A0B0E; font-family: var(--font-body); font-size: 15px; font-weight: 700; cursor: pointer; transition: background var(--t-fast); margin-top: 4px; }
+.setup-wizard__cta:hover { background: var(--accent-bright); }
+.setup-wizard__skip { background: none; border: none; color: var(--text-faint); font-size: 12px; cursor: pointer; text-decoration: underline; }
+.setup-wizard__skip:hover { color: var(--text-muted); }
