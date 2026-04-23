@@ -20,7 +20,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: desktop/package-lock.json
 
-      # FIX: Install tools required by electron-builder for Linux
       - name: Install Linux dependencies
         run: sudo apt-get install -y libarchive-tools
 
@@ -30,12 +29,15 @@ jobs:
 
       - name: Build React app
         working-directory: desktop
-        run: CI=false npm run build
+        run: npm run build
+        env:
+          CI: false # <--- FIX: Set env var like this
 
       - name: Build Linux AppImage
         working-directory: desktop
-        run: CI=false npm run electron:build:linux
+        run: npm run electron:build:linux
         env:
+          CI: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Linux artifact
@@ -45,7 +47,6 @@ jobs:
           path: desktop/dist/*.AppImage
 
   build-windows:
-    # OPTIMIZATION: Use native Windows runner (more reliable than Wine)
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -64,12 +65,15 @@ jobs:
 
       - name: Build React app
         working-directory: desktop
-        run: CI=false npm run build
+        run: npm run build
+        env:
+          CI: false # <--- FIX: This works on Windows
 
       - name: Build Windows installer
         working-directory: desktop
-        run: CI=false npm run electron:build:win
+        run: npm run electron:build:win
         env:
+          CI: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows artifact
@@ -97,12 +101,15 @@ jobs:
 
       - name: Build React app
         working-directory: desktop
-        run: CI=false npm run build
+        run: npm run build
+        env:
+          CI: false # <--- FIX
 
       - name: Build macOS DMG
         working-directory: desktop
-        run: CI=false npm run electron:build:mac
+        run: npm run electron:build:mac
         env:
+          CI: false
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload macOS artifact
