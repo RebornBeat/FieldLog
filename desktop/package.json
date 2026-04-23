@@ -2,7 +2,7 @@
   "name": "metastrata",
   "version": "1.0.0",
   "description": "Local-first personal data collection and organization application",
-  "author": "UngatedMinds",
+  "author": "RebornBeat",
   "license": "MIT",
   "private": true,
   "main": "public/electron.js",
@@ -34,7 +34,7 @@
     "electron:build:linux": "react-scripts build && electron-builder --linux"
   },
   "build": {
-    "appId": "com.ungatedminds.metastrata",
+    "appId": "com.metastrata",
     "productName": "MetaStrata",
     "directories": {
       "buildResources": "assets",
@@ -47,23 +47,54 @@
       "node_modules/**/*",
       "!node_modules/.cache"
     ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "category": "Utility"
+    },
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
       "icon": "assets/icon.icns",
       "category": "public.app-category.productivity",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist"
-    },
-    "linux": {
-      "target": [{ "target": "AppImage", "arch": ["x64"] }],
-      "icon": "assets/icon.png",
-      "category": "Utility"
     },
     "nsis": {
       "oneClick": false,
@@ -73,16 +104,35 @@
     },
     "dmg": {
       "contents": [
-        { "x": 130, "y": 220 },
-        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
       ]
     }
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest"]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

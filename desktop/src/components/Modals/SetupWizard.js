@@ -1,7 +1,7 @@
-import React from 'react';
-import { FolderOpen, Shield, Archive } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
-import './Modals.css';
+import React from "react";
+import { FolderOpen, Shield, Archive } from "lucide-react";
+import { useApp } from "../../context/AppContext";
+import "./Modals.css";
 
 export default function SetupWizard() {
   const { state, dispatch, chooseProjectRoot } = useApp();
@@ -17,7 +17,8 @@ export default function SetupWizard() {
         <h1 className="setup-wizard__title">Welcome to MetaStrata</h1>
         <p className="setup-wizard__sub">
           Local-first scientific file metadata organizer. Before you begin,
-          choose a project folder where all your <code>.stratum</code> archives will be stored automatically.
+          choose a project folder where all your <code>.stratum</code> archives
+          will be stored automatically.
         </p>
 
         <div className="setup-points">
@@ -25,21 +26,29 @@ export default function SetupWizard() {
             <Archive size={16} className="setup-point__icon" />
             <div>
               <strong>All archives auto-save here</strong>
-              <p>No "Save As" dialogs. Every .stratum you create goes straight into this folder.</p>
+              <p>
+                No "Save As" dialogs. Every .stratum you create goes straight
+                into this folder.
+              </p>
             </div>
           </div>
           <div className="setup-point">
             <FolderOpen size={16} className="setup-point__icon" />
             <div>
               <strong>Self-aware collection</strong>
-              <p>MetaStrata scans this folder on launch and stays aware of every archive you have.</p>
+              <p>
+                MetaStrata scans this folder on launch and stays aware of every
+                archive you have.
+              </p>
             </div>
           </div>
           <div className="setup-point">
             <Shield size={16} className="setup-point__icon" />
             <div>
               <strong>Your data, your device</strong>
-              <p>Nothing is transmitted. Files never leave your machine. Ever.</p>
+              <p>
+                Nothing is transmitted. Files never leave your machine. Ever.
+              </p>
             </div>
           </div>
         </div>
@@ -49,7 +58,12 @@ export default function SetupWizard() {
           Choose Project Folder
         </button>
 
-        <button className="setup-wizard__skip" onClick={() => dispatch({ type:'CLOSE_MODAL', payload:'setupWizard' })}>
+        <button
+          className="setup-wizard__skip"
+          onClick={() =>
+            dispatch({ type: "CLOSE_MODAL", payload: "setupWizard" })
+          }
+        >
           Skip for now
         </button>
       </div>
@@ -59,12 +73,41 @@ export default function SetupWizard() {
 
 function StratumMark() {
   return (
-    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
-      <rect x="4" y="6"  width="48" height="12" rx="4" fill="var(--accent)"     opacity="1"   />
-      <rect x="4" y="22" width="48" height="9"  rx="3" fill="var(--accent-dim)" opacity="0.75"/>
-      <rect x="4" y="35" width="48" height="7"  rx="3" fill="var(--accent-dim)" opacity="0.50"/>
-      <rect x="4" y="45" width="48" height="5"  rx="2" fill="var(--accent-dim)" opacity="0.30"/>
-      <rect x="4" y="53" width="48" height="2"  rx="1" fill="var(--accent-dim)" opacity="0.15"/>
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect x="1" y="2" width="14" height="3" rx="1" fill="var(--accent)" />
+      <rect
+        x="1"
+        y="6.5"
+        width="14"
+        height="2.5"
+        rx="1"
+        fill="var(--accent-dim)"
+        opacity="0.75"
+      />
+      <rect
+        x="1"
+        y="10.5"
+        width="14"
+        height="2.5"
+        rx="1"
+        fill="var(--accent-dim)"
+        opacity="0.45"
+      />
+      <rect
+        x="1"
+        y="14"
+        width="14"
+        height="1"
+        rx="0.5"
+        fill="var(--accent-dim)"
+        opacity="0.25"
+      />
     </svg>
   );
 }

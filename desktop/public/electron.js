@@ -8,6 +8,7 @@ const {
   shell,
 } = require("electron");
 const path = require("path");
+const { nativeImage } = require("electron");
 const fs = require("fs");
 const crypto = require("crypto");
 const http = require("http");
@@ -265,6 +266,22 @@ function createStrataZip({ collectionName, stratumPaths, description = "" }) {
 
 // ─── Window ───────────────────────────────────────────────────────────────────
 function createWindow() {
+  // 1. Determine if we are in development or production
+  const isDev = process.env.ELECTRON_IS_DEV === "1" || !app.isPackaged;
+
+  // 2. Select the correct icon filename for the platform
+  const iconName = process.platform === "win32" ? "icon.ico" : "icon.png";
+
+  // 3. Resolve the path
+  // Dev: Looks in project_root/assets/
+  // Prod: Looks in resources/assets/ (We will configure this in package.json)
+  const iconPath = isDev
+    ? path.join(__dirname, "..", "assets", iconName)
+    : path.join(process.resourcesPath, "assets", iconName);
+
+  // 4. Create the native image
+  const icon = nativeImage.createFromPath(iconPath);
+
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -274,6 +291,8 @@ function createWindow() {
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
     trafficLightPosition: { x: 16, y: 12 },
     backgroundColor: "#0A0B0D",
+    icon: icon,
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
